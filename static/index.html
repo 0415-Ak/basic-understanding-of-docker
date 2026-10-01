@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Calculator</title>
+  <style>
+    body { font-family: Arial, sans-serif; display: flex; justify-content: center; margin-top: 80px; background: #f2f4f8; }
+    .box { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.1); width: 300px; }
+    input, select, button { width: 100%; padding: 10px; margin: 8px 0; font-size: 16px; box-sizing: border-box; }
+    button { background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; }
+    #result { font-size: 20px; margin-top: 15px; text-align: center; font-weight: bold; }
+    .error { color: #dc2626; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Calculator</h2>
+    <input type="number" id="a" placeholder="First number">
+    <select id="op">
+      <option value="add">+ Add</option>
+      <option value="sub">- Subtract</option>
+      <option value="mul">× Multiply</option>
+      <option value="div">÷ Divide</option>
+    </select>
+    <input type="number" id="b" placeholder="Second number">
+    <button onclick="calculate()">Calculate</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    async function calculate() {
+      const a = parseFloat(document.getElementById("a").value);
+      const b = parseFloat(document.getElementById("b").value);
+      const op = document.getElementById("op").value;
+      const out = document.getElementById("result");
+
+      const res = await fetch("/api/calculate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ a, b, op })
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        out.className = "";
+        out.textContent = "Result: " + data.result;
+      } else {
+        out.className = "error";
+        out.textContent = data.detail;
+      }
+    }
+  </script>
+</body>
+</html>
